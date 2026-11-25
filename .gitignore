@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Ambientes virtuais e configurações locais
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+
+# Editores e sistema operacional
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Dados/resultados temporários e arquivos grandes
+*.tmp
+*.log
+*.bak
+*.sqlite3
+*.db
+
+# Saídas comuns de execução (remova esta regra se quiser versionar resultados)
+output/
+outputs/
+temp/
+tmp/

@@ -1,0 +1,23 @@
+O repositório remoto já foi criado:
+https://github.com/ArthurMontPereira/MAE014-Estruturas-de-Dados
+
+1. Extraia o arquivo ZIP.
+2. Abra um terminal dentro da pasta MAE014-Estruturas-de-Dados.
+3. Execute:
+
+   git init
+   git add .
+   git commit -m "chore: cria estrutura inicial dos trabalhos MAE014"
+   git branch -M main
+   git remote add origin https://github.com/ArthurMontPereira/MAE014-Estruturas-de-Dados.git
+   git push -u origin main
+
+Se o comando `git remote add origin` informar que `origin` já existe, execute:
+
+   git remote set-url origin https://github.com/ArthurMontPereira/MAE014-Estruturas-de-Dados.git
+
+E depois repita:
+
+   git push -u origin main
+
+Se o Git solicitar autenticação, conclua pelo navegador ou pelo método de autenticação configurado no seu computador. Não coloque senha ou token dentro dos arquivos do projeto.
