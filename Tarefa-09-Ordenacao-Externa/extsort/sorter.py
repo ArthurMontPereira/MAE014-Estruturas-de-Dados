@@ -17,7 +17,7 @@ _ORDERS = {"asc": False, "ascendente": False, "desc": True, "descendente": True}
 
 @dataclass
 class SortStats:
-    """Contadores simples de uma execução."""
+    """Contadores simples de uma execução (úteis como evidência no relatório)."""
 
     total_records: int
     num_runs: int
@@ -32,9 +32,7 @@ def _parse_order(order: str) -> bool:
     try:
         return _ORDERS[order.lower()]
     except KeyError:
-        raise ValueError(
-            f"ordem inválida: {order!r} (use 'asc' ou 'desc')"
-        ) from None
+        raise ValueError(f"ordem inválida: {order!r} (use 'asc' ou 'desc')") from None
 
 
 def _read_header(path: Path, delimiter: str, encoding: str) -> Row | None:
@@ -44,7 +42,7 @@ def _read_header(path: Path, delimiter: str, encoding: str) -> Row | None:
 
 
 def _create_temp_output(out_path: Path) -> Path:
-    """Cria arquivo temporário com nome exclusivo na pasta da saída."""
+    """Cria um arquivo temporário vazio, com nome exclusivo, na pasta da saída."""
     fd, name = tempfile.mkstemp(
         prefix=out_path.name + ".",
         suffix=".tmp",
@@ -67,18 +65,12 @@ def external_sort(
 ) -> SortStats:
     """Ordena um CSV grande por MergeSort externo, sem carregá-lo inteiro na RAM.
 
-    filepath: CSV de entrada; a primeira linha é o cabeçalho.
-    key_column: nome da coluna (str) ou posição 0-based (int).
-    order: asc/desc (também aceita ascendente/descendente).
-    output_path: arquivo de saída; por padrão, <nome>.sorted<extensão>.
-    buffer_records: máximo de registros por run (limite em registros, não bytes).
-    key_type: str (padrão) ou int.
-    delimiter: separador do CSV.
-    encoding: codificação do arquivo.
+    Requer Python 3.10 ou superior. buffer_records limita registros, não bytes.
+    A memória auxiliar total é O(M + R), pois a lista de caminhos dos runs
+    também ocupa memória. A ordenação é estável.
 
-    A memória auxiliar total é O(M + R), porque a lista de caminhos dos runs
-    cresce com R. A ordenação é estável. Temporários são removidos em erros e
-    Ctrl+C; encerramentos abruptos podem deixar arquivos residuais.
+    Temporários são removidos em erros e Ctrl+C. Encerramentos abruptos
+    (SIGTERM, SIGKILL ou queda de energia) podem deixar arquivos residuais.
     """
     t_start = time.perf_counter()
 
