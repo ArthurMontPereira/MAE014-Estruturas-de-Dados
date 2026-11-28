@@ -1,0 +1,15 @@
+# Datasets grandes e resultados experimentais (recriados pelo gerador)
+big.csv
+dataset.csv
+ordenado*.csv
+saida_*.csv
+memoria_*.csv
+por_curso.csv
+
+# Arquivos e pastas temporárias do algoritmo
+*.tmp
+extsort_*/
+
+# Cache Python
+__pycache__/
+*.py[cod]
