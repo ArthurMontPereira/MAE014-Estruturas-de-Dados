@@ -10,6 +10,8 @@ from typing import Any, Callable
 Row = list[str]
 KeyFunc = Callable[[Row], Any]
 
+# Conversores aceitos para a chave. Para aceitar outro tipo (por exemplo
+# "float"), basta acrescentar uma linha neste dicionário.
 CONVERTERS: dict[str, Callable[[str], Any]] = {
     "str": str,
     "int": int,
@@ -17,7 +19,11 @@ CONVERTERS: dict[str, Callable[[str], Any]] = {
 
 
 def resolve_key_index(header: Row, key_column: str | int) -> int:
-    """Devolve a posição (0-based) da coluna da chave."""
+    """Devolve a posição (0-based) da coluna da chave.
+
+    key_column pode ser o nome da coluna (str) ou a posição (int).
+    Levanta ValueError se a coluna não existir ou se o nome for ambíguo.
+    """
     if isinstance(key_column, int):
         if not 0 <= key_column < len(header):
             raise ValueError(
@@ -43,7 +49,10 @@ def check_key_type(key_type: str) -> None:
 
 
 def make_key_func(key_index: int, key_type: str = "str") -> KeyFunc:
-    """Cria a função que extrai e converte a chave de uma linha."""
+    """Cria a função que extrai e converte a chave de uma linha.
+
+    key_type deve ser uma das chaves de CONVERTERS ("str" ou "int").
+    """
     check_key_type(key_type)
     convert = CONVERTERS[key_type]
 
@@ -54,7 +63,12 @@ def make_key_func(key_index: int, key_type: str = "str") -> KeyFunc:
 
 
 def validate_key(row: Row, key_index: int, key_func: KeyFunc, line_num: int) -> None:
-    """Confere se a linha tem chave utilizável; informa a linha em caso de erro."""
+    """Confere se a linha tem uma chave utilizável; se não, levanta ValueError.
+
+    Chave ausente = linha curta demais, campo vazio ou só com espaços.
+    Chave inválida = valor que não pode ser convertido para o key_type.
+    line_num é a linha física do arquivo, usada só na mensagem de erro.
+    """
     if key_index >= len(row) or not row[key_index].strip():
         raise ValueError(f"linha {line_num}: chave ausente (coluna {key_index})")
     try:
