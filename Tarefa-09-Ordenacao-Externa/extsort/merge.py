@@ -2,7 +2,7 @@
 
 Os runs são combinados de dois em dois, de forma recursiva (divisão e
 conquista). Durante cada merge os registros são lidos e gravados em
-streaming: só os dois registros cabeça ficam em memória.
+streaming: só os dois registros "cabeça" ficam em memória.
 """
 from __future__ import annotations
 
@@ -22,8 +22,10 @@ def _write_csv(
 ) -> None:
     """Grava rows em path (com cabeçalho, se informado), em streaming."""
     with open(path, "w", newline="", encoding=encoding) as out_file:
-        # Usa o terminador padrão do csv.writer. Isso faz o writer colocar
-        # aspas em campos contendo CR ou LF, inclusive no Python 3.10.
+        # Terminador de linha padrão do módulo csv (CRLF). Com ele o writer
+        # coloca aspas em campos que contêm CR ou LF, inclusive no Python 3.10.
+        # Com lineterminator="\n", o Python 3.10 podia gravar um CR solto
+        # sem aspas, e ao reler o arquivo o registro era partido.
         writer = csv.writer(out_file, delimiter=delimiter)
         if header is not None:
             writer.writerow(header)
@@ -36,7 +38,12 @@ def merge_two_sorted(
     key_func: KeyFunc,
     descending: bool,
 ) -> Iterator[Row]:
-    """Une dois fluxos ordenados, emitindo um registro por vez."""
+    """Merge de dois fluxos já ordenados (o Merge do MergeSort).
+
+    É um gerador: produz um registro por vez, sem montar listas.
+    Em caso de empate de chaves sai primeiro o registro de left, mantendo
+    a ordenação estável.
+    """
     left_row = next(left, None)
     right_row = next(right, None)
 
@@ -94,23 +101,24 @@ def merge_all_runs(
     delimiter: str = ",",
     encoding: str = "utf-8",
 ) -> None:
-    """Combina todos os runs em out_path, apagando os runs consumidos."""
+    """Combina todos os runs em out_path (cabeçalho + registros ordenados).
+
+    Os arquivos de entrada de cada merge são apagados logo após o merge,
+    para limitar o uso de disco. Só o merge final escreve o cabeçalho.
+    """
     if not runs:  # arquivo só com cabeçalho
         _write_csv(out_path, [], delimiter, encoding, header)
         return
 
     if len(runs) == 1:  # nada para juntar: só acrescenta o cabeçalho
         with open(runs[0], newline="", encoding=encoding) as run_file:
-            _write_csv(
-                out_path, csv.reader(run_file, delimiter=delimiter),
-                delimiter, encoding, header,
-            )
+            _write_csv(out_path, csv.reader(run_file, delimiter=delimiter), delimiter, encoding, header)
         runs[0].unlink()
         return
 
     def merge_range(lo: int, hi: int) -> Path:
-        """Junta runs[lo:hi] em um único run."""
-        if hi - lo == 1:
+        """Junta runs[lo:hi] em um único run e devolve o caminho dele."""
+        if hi - lo == 1:  # caso base: um run já está ordenado
             return runs[lo]
 
         mid = (lo + hi) // 2
