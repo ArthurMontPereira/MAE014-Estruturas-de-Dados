@@ -14,7 +14,7 @@ Cada tarefa possui seu próprio diretório para separar implementação, testes,
 | 09 | Ordenação Externa por MergeSort | [Tarefa-09-Ordenacao-Externa](Tarefa-09-Ordenacao-Externa/) |
 | 10 | Grafos, dígrafos, multigrafos e hipergrafos | [Tarefa-10-Grafos](Tarefa-10-Grafos/) |
 
-> **Situação do repositório:** as pastas das tarefas 06, 08 e 10 estão criadas como estrutura inicial. A Tarefa 09 contém implementação, testes e relatório. A Tarefa 05 ainda não possui diretório neste repositório.
+> **Situação do repositório:** as pastas das tarefas 06, 08 e 10 estão criadas como estrutura inicial. A Tarefa 09 contém implementação e testes; o PDF do relatório ainda precisa ser adicionado à pasta `Tarefa-09-Ordenacao-Externa/relatorio/`. A Tarefa 05 ainda não possui diretório neste repositório.
 
 ## Sobre os trabalhos
 
