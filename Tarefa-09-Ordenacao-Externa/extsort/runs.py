@@ -22,12 +22,13 @@ def _write_run(
     encoding: str,
 ) -> Path:
     """Ordena o buffer em memória e grava como um run; devolve o caminho."""
-    # list.sort é estável, inclusive com reverse=True.
+    # list.sort é estável, inclusive com reverse=True: chaves iguais mantêm
+    # a ordem original do arquivo.
     buffer.sort(key=key_func, reverse=descending)
 
     run_path = run_dir / f"run_{run_number:06d}.csv"
     with open(run_path, "w", newline="", encoding=encoding) as run_file:
-        # Sem lineterminator personalizado: usa o padrão do csv.writer.
+        # Sem lineterminator: usa o padrão do csv (veja o motivo em merge._write_csv).
         csv.writer(run_file, delimiter=delimiter).writerows(buffer)
     return run_path
 
@@ -42,7 +43,13 @@ def generate_runs(
     delimiter: str = ",",
     encoding: str = "utf-8",
 ) -> tuple[list[Path], int]:
-    """Divide o CSV em runs ordenados gravados em run_dir."""
+    """Divide o CSV em runs ordenados gravados em run_dir.
+
+    Cada registro tem a chave validada assim que é lido (ValueError com o
+    número da linha em caso de chave ausente ou inválida).
+
+    Devolve (caminhos_dos_runs, total_de_registros).
+    """
     runs: list[Path] = []
     total_records = 0
     buffer: list[Row] = []
@@ -58,19 +65,13 @@ def generate_runs(
 
             if len(buffer) == buffer_records:
                 runs.append(
-                    _write_run(
-                        buffer, run_dir, len(runs), key_func, descending,
-                        delimiter, encoding,
-                    )
+                    _write_run(buffer, run_dir, len(runs), key_func, descending, delimiter, encoding)
                 )
                 buffer.clear()
 
     if buffer:  # último run, possivelmente menor que o buffer
         runs.append(
-            _write_run(
-                buffer, run_dir, len(runs), key_func, descending,
-                delimiter, encoding,
-            )
+            _write_run(buffer, run_dir, len(runs), key_func, descending, delimiter, encoding)
         )
 
     return runs, total_records
