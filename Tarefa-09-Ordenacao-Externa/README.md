@@ -9,7 +9,7 @@ A solução segue as duas camadas exigidas no enunciado:
 1. **Geração de runs:** leitura do CSV em blocos de até `buffer_records` registros; cada bloco é ordenado em memória e gravado em um arquivo temporário (*run*).
 2. **Merge externo:** os runs são combinados de dois em dois, por divisão e conquista, lendo e escrevendo em *streaming*, até restar um único arquivo ordenado.
 
-O merge é estável: em caso de empate, o registro do run à esquerda é emitido primeiro. O cabeçalho é preservado. Os temporários são removidos nos encerramentos tratados pelo programa; encerramentos abruptos podem deixar arquivos residuais, conforme explicado adiante.
+O merge é estável: em caso de empate, o registro do run à esquerda é emitido primeiro. O cabeçalho é preservado. Os temporários são removidos nos encerramentos tratados pelo programa; encerramentos abruptos podem deixar arquivos residuais.
 
 ## Requisitos
 
@@ -28,15 +28,18 @@ Tarefa-09-Ordenacao-Externa/
 │   ├── merge.py
 │   └── sorter.py
 ├── tests/
-│   ├── __init__.py
-│   └── test_extsort.py
+│   ├── _support.py
+│   ├── test_sorting.py
+│   ├── test_validation.py
+│   ├── test_csv_cases.py
+│   ├── test_temp_cleanup.py
+│   └── test_generator_cli.py
 ├── sort_csv.py
 ├── generate_dataset.py
 ├── medir_memoria.py
 ├── README.md
 └── relatorio/
     ├── relatorio_tarefa09.pdf
-    ├── relatorio_tarefa09.tex
     └── evidencia_85_testes.txt
 ```
 
@@ -49,9 +52,9 @@ python3 --version
 python3 -m unittest -v
 ```
 
-A suíte final contém **85 testes**. O autor executou a suíte duas vezes em Python 3.14.10; ambas terminaram com `OK`. A evidência resumida está em [`relatorio/evidencia_85_testes.txt`](relatorio/evidencia_85_testes.txt).
+A suíte contém **85 testes**. O autor executou a suíte duas vezes em Python 3.14.10; ambas terminaram com `OK`. A evidência resumida está em [`relatorio/evidencia_85_testes.txt`](relatorio/evidencia_85_testes.txt).
 
-A suíte cobre ordenação crescente e decrescente, chaves `str` e `int`, estabilidade, parâmetros inválidos, buffers, CSVs com campos especiais, limpeza de temporários, gerador de dados e interface de linha de comando. Nem todos os testes comparam a saída com `sorted()`; vários verificam comportamento e tratamento de erros.
+Os testes estão separados por assunto: ordenação e estabilidade, chaves e parâmetros inválidos, buffers, campos e arquivos CSV especiais, limpeza de temporários, gerador de dados e CLI. Nem todos comparam a saída com `sorted()`; vários verificam comportamento e tratamento de erros.
 
 ## Uso pela linha de comando
 
@@ -86,7 +89,7 @@ python3 sort_csv.py vendas.csv --key id --key-type int --buffer 50000
 python3 sort_csv.py vendas.csv --key id -d ";"
 ```
 
-Se `--key` for um número e existir uma coluna com esse nome no cabeçalho, o nome tem prioridade; caso contrário, o valor numérico é interpretado como posição.
+Se `--key` for um número e existir uma coluna com esse nome no cabeçalho, o nome tem prioridade; caso contrário, o valor é interpretado como posição.
 
 ## Gerar um dataset reproduzível
 
@@ -143,4 +146,4 @@ O resultado não corresponde ao consumo total de RAM do processo.
 
 ## Relatório
 
-O relatório de análise crítica e Post-Mortem de IA está em [`relatorio/relatorio_tarefa09.pdf`](relatorio/relatorio_tarefa09.pdf). O fonte LaTeX e a evidência dos testes locais também estão na pasta `relatorio/`.
+O relatório de análise crítica e Post-Mortem de IA está em [`relatorio/relatorio_tarefa09.pdf`](relatorio/relatorio_tarefa09.pdf). A evidência dos testes locais também está na pasta `relatorio/`.
