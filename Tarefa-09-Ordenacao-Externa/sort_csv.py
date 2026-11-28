@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Linha de comando do MergeSort externo para arquivos CSV."""
+"""Linha de comando do MergeSort externo para arquivos CSV.
+
+Exemplos (há mais no README):
+    python3 sort_csv.py alunos.csv --key dre
+    python3 sort_csv.py alunos.csv --key 2 --order desc -o alunos_desc.csv
+    python3 sort_csv.py vendas.csv --key id --key-type int --buffer 50000 -d ";"
+"""
 from __future__ import annotations
 
 import argparse
@@ -33,7 +39,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "-o", "--output", metavar="SAIDA",
-        help="arquivo de saída (padrão: <nome>.sorted<extensão> ao lado da entrada)",
+        help="arquivo de saída (padrão: <nome>.sorted<extensão> ao lado da entrada, "
+             "ex.: alunos.csv -> alunos.sorted.csv)",
     )
     parser.add_argument(
         "-b", "--buffer", type=int, default=100_000, metavar="N",
@@ -54,10 +61,14 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def parse_key_column(
-    key: str, input_path: Path, delimiter: str, encoding: str
-) -> str | int:
-    """Decide se --key é nome de coluna ou posição."""
+def parse_key_column(key: str, input_path: Path, delimiter: str, encoding: str) -> str | int:
+    """Decide se --key é um nome de coluna ou uma posição.
+
+    Regra: se existir uma coluna com esse nome no cabeçalho, vale o nome.
+    Senão, se o texto for só dígitos, vale como posição (começando em 0).
+    Caso contrário devolve o próprio texto, e o external_sort avisa que a
+    coluna não foi encontrada.
+    """
     with open(input_path, newline="", encoding=encoding) as csv_file:
         header = next(csv.reader(csv_file, delimiter=delimiter), [])
     if key in header or not key.isdecimal():
@@ -77,15 +88,11 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.output:
         output_path = Path(args.output)
-    else:
-        output_path = input_path.with_name(
-            f"{input_path.stem}.sorted{input_path.suffix}"
-        )
+    else:  # mesma regra padrão do external_sort
+        output_path = input_path.with_name(f"{input_path.stem}.sorted{input_path.suffix}")
 
     try:
-        key_column = parse_key_column(
-            args.key, input_path, args.delimiter, args.encoding
-        )
+        key_column = parse_key_column(args.key, input_path, args.delimiter, args.encoding)
         stats = external_sort(
             input_path, key_column, args.order,
             output_path=output_path,
@@ -94,7 +101,7 @@ def main(argv: list[str] | None = None) -> int:
             delimiter=args.delimiter,
             encoding=args.encoding,
         )
-    except UnicodeDecodeError:
+    except UnicodeDecodeError:  # precisa vir antes de ValueError (é subclasse dele)
         print(
             f"erro: não foi possível ler o arquivo com a codificação {args.encoding!r}. "
             "Tente --encoding latin-1 ou --encoding utf-8-sig.",
