@@ -1,0 +1,73 @@
+EVIDÊNCIA DE TESTES — TAREFA 09
+Autor: Arthur
+Ambiente informado no terminal local: Aurora 44.20261110.1 (base Kinoite)
+Python local: 3.14.10
+
+1. TESTES AUTOMATIZADOS
+
+Comando:
+python3 -m unittest -v
+
+Primeira execução:
+Ran 85 tests in 0.502s
+OK
+
+Segunda execução (saída salva localmente em evidencia_85_testes.txt):
+Ran 85 tests in 0.506s
+OK
+
+2. DATASET E ORDENAÇÃO
+
+Geração:
+python3 generate_dataset.py --records 800000 --output big.csv --seed 42
+
+Resultado:
+Gerado big.csv: 800000 registros (seed 42).
+Arquivo: aproximadamente 41 MB.
+
+Ordenação crescente:
+python3 sort_csv.py big.csv --key id --buffer 5000 -o ordenado.csv
+Ordenação concluída: 800000 registros, 160 runs, 8 níveis de merge.
+Tempos: runs 4.10s | merge 26.61s | total 30.71s
+
+Validação:
+tail -n +2 ordenado.csv | LC_ALL=C sort -c
+Terminou sem erros.
+
+Ordenação decrescente:
+python3 sort_csv.py big.csv --key id --buffer 5000 --order desc -o ordenado_desc.csv
+Ordenação concluída: 800000 registros, 160 runs, 8 níveis de merge.
+Tempos: runs 4.19s | merge 26.20s | total 30.39s
+
+Validação:
+tail -n +2 ordenado_desc.csv | LC_ALL=C sort -c -r
+Terminou sem erros.
+
+3. COMPARAÇÃO ENTRE BUFFERS (EXECUÇÕES SEM tracemalloc)
+
+Buffer 5.000:
+160 runs; 8 níveis; geração 4,12 s; merge 26,16 s; total 30,28 s.
+
+Buffer 20.000:
+40 runs; 6 níveis; geração 5,21 s; merge 19,52 s; total 24,73 s.
+
+Buffer 50.000:
+16 runs; 4 níveis; geração 5,04 s; merge 14,18 s; total 19,22 s.
+
+4. PICO DE ALOCAÇÕES COM tracemalloc (EXECUÇÕES SEPARADAS)
+
+Buffer 5.000: 2,56 MB.
+Buffer 20.000: 8,41 MB.
+Buffer 50.000: 20,72 MB.
+
+Esses números representam alocações rastreadas pelo Python, não o uso total de RAM do processo.
+
+5. ESTABILIDADE
+
+Arquivo ordenado por curso, com buffer de 5.000 registros.
+Verificação em streaming da ordem crescente dos cursos e da preservação da ordem original entre registros com a mesma chave.
+
+Resultado:
+Violações de estabilidade/ordem: 0
+
+Os testes, comandos e saídas acima foram executados pelo autor localmente e transcritos a partir do histórico de terminal fornecido. As verificações adicionais em outras versões de Python, mutantes, fuzz testing e sinais descritas no relatório foram realizadas pelo Claude em ambiente separado.
