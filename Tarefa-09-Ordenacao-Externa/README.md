@@ -39,7 +39,6 @@ Tarefa-09-Ordenacao-Externa/
 ├── medir_memoria.py
 ├── README.md
 └── relatorio/
-    ├── relatorio_tarefa09.pdf
     └── evidencia_85_testes.txt
 ```
 
@@ -146,4 +145,4 @@ O resultado não corresponde ao consumo total de RAM do processo.
 
 ## Relatório
 
-O relatório de análise crítica e Post-Mortem de IA está em [`relatorio/relatorio_tarefa09.pdf`](relatorio/relatorio_tarefa09.pdf). A evidência dos testes locais também está na pasta `relatorio/`.
+O PDF do relatório de análise crítica e Post-Mortem de IA deve ser colocado nesta pasta com o nome `relatorio_tarefa09.pdf`, conforme a exigência de entrega do enunciado. A evidência dos testes locais já está em `relatorio/evidencia_85_testes.txt`.
