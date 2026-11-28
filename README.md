@@ -14,7 +14,7 @@ A organização é feita por tarefa: cada diretório reúne o enunciado resumido
 | [09 — Ordenação Externa](Tarefa-09-Ordenacao-Externa/) | MergeSort externo para CSV | Implementação, testes e documentação |
 | [10 — Grafos](Tarefa-10-Grafos/) | Grafos, dígrafos, multigrafos e hipergrafos | Diretório inicial |
 
-Os status acima descrevem apenas o que está versionado aqui; um diretório inicial não significa que a tarefa esteja concluída.
+Os status acima descrevem apenas o que está versionado aqui.
 
 ## Conteúdo em poucas linhas
 
@@ -37,7 +37,7 @@ Tarefa-XX-Nome/
 └── relatorio/      # PDF e evidências da execução
 ```
 
-Na Tarefa 09, por exemplo, o pacote Python `extsort/` fica diretamente na raiz do diretório da tarefa; por isso, ela não precisa de uma pasta `src/`.
+Na Tarefa 09, por exemplo, o pacote Python `extsort/` fica diretamente na raiz do diretório da tarefa,por isso, ela não precisa de uma pasta `src/`.
 
 ## Executar e testar
 
